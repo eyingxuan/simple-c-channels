@@ -1,10 +1,11 @@
 #include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "channels.h"
 
-#define MAX_NUM 100000
+#define MAX_NUM 5
 
 void single_thread() {
   channel_ty *chan = (channel_ty *)chan_create();
@@ -52,8 +53,10 @@ void multi_thread() {
   pthread_t consume_1;
 
   pthread_create(&send_1, NULL, sender, (void *)chan);
-  pthread_create(&send_2, NULL, sender, (void *)chan);
   pthread_create(&consume_1, NULL, recv, (void *)chan);
+
+  sleep(1);
+  pthread_create(&send_2, NULL, sender, (void *)chan);
 
   pthread_join(send_1, NULL);
   pthread_join(send_2, NULL);

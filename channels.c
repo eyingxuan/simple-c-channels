@@ -78,12 +78,12 @@ void chan_send(channel_ty *handle, int64_t *val) {
 }
 
 int64_t *chan_recv(channel_ty *handle) {
+  if (pthread_mutex_lock(&(handle->lock)) != 0) {
+    perror("chan_recv mutex lock: ");
+    exit(1);
+  }
   while (1) {
     // Lock acquired
-    if (pthread_mutex_lock(&(handle->lock)) != 0) {
-      perror("chan_recv mutex lock: ");
-      exit(1);
-    }
     if (handle->q.head != NULL) {
       int64_t *ret = dequeue(&(handle->q));
       if (pthread_mutex_unlock(&(handle->lock)) != 0) {
